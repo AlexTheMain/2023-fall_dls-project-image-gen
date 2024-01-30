@@ -17,7 +17,7 @@ class СonvBlock(nn.Module):
         self.conv_block= nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, padding, stride),
             nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):

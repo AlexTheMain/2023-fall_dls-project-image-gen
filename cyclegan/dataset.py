@@ -2,6 +2,7 @@ import glob
 import os
 from torch.utils.data import DataLoader, Dataset
 import torchvision.transforms as transforms
+from torchvision.datasets import ImageFolder
 from PIL import Image
 import random
 
@@ -18,12 +19,12 @@ class ImageDataset(Dataset):
 
         
     def __getitem__(self, index):
-        image_A = Image.open(self.files_A[index % len(self.files_A)])
-
         if self.unaligned:
             image_B = Image.open(self.files_B[random.randint(0, len(self.files_B) - 1)])
+            image_A = Image.open(self.files_A[random.randint(0, len(self.files_A) - 1)])
         else:
             image_B = Image.open(self.files_B[index % len(self.files_B)])
+            image_A = Image.open(self.files_A[index % len(self.files_A)])
 
         # Convert grayscale images to rgb
         if image_A.mode != "RGB":

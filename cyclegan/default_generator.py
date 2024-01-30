@@ -7,11 +7,11 @@ class InstanseResidualBlock(nn.Module):
         self.res_block = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding =1),
             nn.InstanceNorm2d(out_channels),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(out_channels, out_channels, kernel_size, stride, padding =1),
             nn.InstanceNorm2d(out_channels)
         )
-        self.relu_out = nn.ReLU()
+        self.relu_out = nn.ReLU(inplace=True)
 
     def forward(self, x):
         input = x 
@@ -26,11 +26,11 @@ class ClassicResidualBlock(nn.Module):
         self.res_block = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(out_channels, out_channels, kernel_size, stride, padding=1),
             nn.BatchNorm2d(out_channels)
         )
-        self.relu_out = nn.ReLU()
+        self.relu_out = nn.ReLU(inplace=True),
 
     def forward(self, x):
         input = x
@@ -43,13 +43,13 @@ class DownSamplingInput(nn.Module):
         self.ds_block = nn.Sequential(      
             nn.Conv2d(3, 64, kernel_size=9, stride=1, padding=4),
             nn.InstanceNorm2d(64),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
             nn.InstanceNorm2d(128),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
             nn.InstanceNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
@@ -61,10 +61,10 @@ class UpSamplingOutput(nn.Module):
         self.us_block = nn.Sequential(    
             nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.InstanceNorm2d(128),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.InstanceNorm2d(64),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(64, 3, kernel_size=9, stride=1, padding=4),
             nn.Tanh(),
         )

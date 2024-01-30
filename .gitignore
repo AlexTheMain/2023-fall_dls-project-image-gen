@@ -3,6 +3,7 @@ __pycache__/**
 other_datasets/*
 other_files/*
 *_datasets/*
+*.pt
 *.jpg
 *.jpeg
 .DS_Store
