@@ -166,9 +166,6 @@ class CycleGAN():
         pred_fake_B = self.D_B(hist_fake_B.to(self.device).detach())
         pred_real_B = self.D_B(real_B)
 
-        
-       
-       
         # Используем историю изображений при вычислении потерь дискриминаторов
         loss_D_A = (F.mse_loss(pred_real_A, torch.ones_like(pred_real_A)) + F.mse_loss(pred_fake_A, torch.zeros_like(pred_fake_A)))*0.5
         loss_D_A.backward()
@@ -177,10 +174,6 @@ class CycleGAN():
         loss_D_B = (F.mse_loss(pred_real_B, torch.ones_like(pred_real_B)) + F.mse_loss(pred_fake_B, torch.zeros_like(pred_fake_B)))*0.5
         loss_D_B.backward()
         self.optimizers['D_B'].step()
-
-        
-        
-        
 
         return {
             'loss_G': loss_G.cpu().item(),
