@@ -4,6 +4,7 @@ import torch.nn as nn
 class ConvOut(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
+        # Определение слоя свертки для окончательного вывода
         self.out = nn.Conv2d(in_channels, out_channels, kernel_size=1)
 
     def forward(self, x):
@@ -13,7 +14,7 @@ class ConvOut(nn.Module):
 class СonvBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=3, padding=1, stride=1):
         super().__init__()
-
+        # Определение блока двух последовательных сверток с батч-нормализацией и активацией ReLU
         self.conv_block= nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, padding, stride),
             nn.BatchNorm2d(out_channels),
@@ -27,7 +28,7 @@ class СonvBlock(nn.Module):
 class DoubleConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
-
+        # Определение блока двух последовательных сверток с батч-нормализацией и активацией ReLU
         self.double_conv_block = nn.Sequential(
             СonvBlock(in_channels, out_channels),
             СonvBlock(out_channels, out_channels),
@@ -41,6 +42,7 @@ class DoubleConvBlock(nn.Module):
 class DownScaleBlock(nn.Module):
     def __init__(self, in_channels, out_channels) -> None:
         super().__init__()
+        # Определение блока для уменьшения размерности с последовательными сверткой и пулингом
         self.maxpool_conv = nn.Sequential(
             DoubleConvBlock(in_channels, out_channels),
             nn.MaxPool2d(2),
@@ -52,20 +54,21 @@ class DownScaleBlock(nn.Module):
 class UpScaleBlock(nn.Module):
     def __init__(self, in_channels, out_channels) -> None:
         super().__init__()
+        # Определение блока для увеличения размерности с использованием транспонированной свертки и двумя последовательными свертками
         self.upsampling_conv = nn.Sequential(
             nn.ConvTranspose2d(in_channels, out_channels, 2,2),
             DoubleConvBlock(out_channels, out_channels),
         )
     
     def forward(self, x, y):
-        x = torch.cat([x, y], dim=1)
+        x = torch.cat([x, y], dim=1)  # Объединение входных и пропущенных данных
         return self.upsampling_conv(x)
     
 
 class BottleNeckBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
-
+        # Определение узкого участка сети с транспонированной сверткой и двумя последовательными свертками
         self.bottleneck_block = nn.Sequential(
             СonvBlock(in_channels, in_channels),
             СonvBlock(in_channels, in_channels),
@@ -82,6 +85,7 @@ class UNetGenerator(nn.Module):
         if out_channels==None:
             out_channels=in_channels
 
+        # Определение всех блоков для построения UNet генератора
         self.input = DoubleConvBlock(in_channels, 32)
         self.ds1 = DownScaleBlock(32,64)
         self.ds2 = DownScaleBlock(64, 128)
@@ -96,9 +100,10 @@ class UNetGenerator(nn.Module):
         self.us3 = UpScaleBlock(256, 64)
         self.us4 = UpScaleBlock(128, 32)
         self.pre_out = DoubleConvBlock(32, 32)
-        self.output = ConvOut(32, 3)
+        self.output = ConvOut(32, 3)  # Окончательный вывод генератора
     
     def forward(self, x):
+        # Проход вперед через все блоки UNet генератора
         inp = self.input(x)
         x1 = self.ds1(inp)
         x2 = self.ds2(x1)
@@ -116,5 +121,3 @@ class UNetGenerator(nn.Module):
         result = self.output(x)
 
         return result
-
-
